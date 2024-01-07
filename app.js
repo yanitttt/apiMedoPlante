@@ -32,7 +32,7 @@ app.get('/demoe', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    // RÃ©cupÃ©rez le mot de passe hachÃ© de l'utilisateur de la base de donnÃ©es
+    // Récupérez le mot de passe haché de l'utilisateur de la base de données
     const query = 'SELECT * FROM utilisateurs WHERE username = ? AND password = ?';
     db.query(query, [username,password], (err, result) => {
         if (err) throw err;
@@ -46,8 +46,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-
-// RÃ©cupÃ©rer les informations d'un utilisateur par ID
+// Récupérer les informations d'un utilisateur par ID
 app.get('/getUser/:id', (req, res) => {
     const { id } = req.params;
     const query = 'SELECT * FROM utilisateurs WHERE id = ?';
@@ -56,7 +55,6 @@ app.get('/getUser/:id', (req, res) => {
         res.send(result[0]);
     });
 });
-
 
 //route pour recuperer les utilisateurs apartir d'un id
 app.get('/utilisateurs/:id', (req, res) => {
@@ -258,5 +256,6 @@ app.delete('/plantes/:id', (req, res) => {
         res.send(result);
     });
 });
-f
+
+
 module.exports = app;
