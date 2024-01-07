@@ -32,7 +32,7 @@ app.get('/demoe', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    // Récupérez le mot de passe haché de l'utilisateur de la base de données
+    // RÃ©cupÃ©rez le mot de passe hachÃ© de l'utilisateur de la base de donnÃ©es
     const query = 'SELECT * FROM utilisateurs WHERE username = ? AND password = ?';
     db.query(query, [username,password], (err, result) => {
         if (err) throw err;
@@ -46,7 +46,8 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Récupérer les informations d'un utilisateur par ID
+
+// RÃ©cupÃ©rer les informations d'un utilisateur par ID
 app.get('/getUser/:id', (req, res) => {
     const { id } = req.params;
     const query = 'SELECT * FROM utilisateurs WHERE id = ?';
@@ -56,7 +57,8 @@ app.get('/getUser/:id', (req, res) => {
     });
 });
 
-// Route pour récupérer les utilisateurs à partir d'un id
+
+//route pour recuperer les utilisateurs apartir d'un id
 app.get('/utilisateurs/:id', (req, res) => {
     const { id } = req.params;
     const query = 'SELECT * FROM utilisateurs WHERE id = ?';
@@ -66,7 +68,8 @@ app.get('/utilisateurs/:id', (req, res) => {
     });
 });
 
-// Récupérer les interactions
+
+// RÃ©cupÃ©rer les interactions
 app.get('/medicaments', (req, res) => {
     const query = 'SELECT * FROM medicaments';
     db.query(query, (err, result) => {
@@ -75,7 +78,7 @@ app.get('/medicaments', (req, res) => {
     });
 });
 
-// Récupérer les interactions
+// RÃ©cupÃ©rer les interactions
 app.get('/plantes', (req, res) => {
     const query = 'SELECT * FROM plantes';
     db.query(query, (err, result) => {
@@ -84,7 +87,7 @@ app.get('/plantes', (req, res) => {
     });
 });
 
-// Récupérer les interactions
+// RÃ©cupÃ©rer les interactions
 app.get('/interactions', (req, res) => {
     const query = 'SELECT * FROM interactions';
     db.query(query, (err, result) => {
@@ -93,35 +96,46 @@ app.get('/interactions', (req, res) => {
     });
 });
 
-// Récupérer les catégories de médicaments
+// recuperer les categories de medicaments
 app.get('/categoriesMedicaments', (req, res) => {
     const query = 'SELECT * FROM categories_medicaments';
     db.query(query, (err, result) => {
+
         if (err) throw err;
         res.send(result);
     });
 });
 
-// Récupérer les catégories de médicaments en fonction de l'id
+// recuperer les categories de medicaments en fonction de l'id
 app.get('/categoriesMedicaments/:id', (req, res) => {
     const { id } = req.params;
     const query = 'SELECT nom_categorie FROM categories_medicaments WHERE id_categorie = ?';
     db.query(query, [id], (err, result) => {
+
         if (err) throw err;
         res.send(result);
+
     });
+
 });
 
-// Récupérer les catégories de plantes
+
+
+
+// recuperer les categories de plantes
 app.get('/categoriesPlantes', (req, res) => {
     const query = 'SELECT * FROM categories_plantes';
     db.query(query, (err, result) => {
+
         if (err) throw err;
         res.send(result);
     });
 });
 
-// Récupérer les interactions
+
+
+
+// RÃ©cupÃ©rer les interactions
 app.get('/interactionsNames', (req, res) => {
     const query = `
     SELECT interactions.id, medicaments.nom AS medicament, plantes.nom AS plante, interactions.description
@@ -135,4 +149,114 @@ app.get('/interactionsNames', (req, res) => {
     });
 });
 
+// RÃ©cupÃ©rer les interactions
+app.get('/interactionsNamesID', (req, res) => {
+    const query = `
+    SELECT interactions.id, interactions.medicament_id AS medicament, interactions.plante_id, interactions.description, medicaments.nom AS medicamentNom, plantes.nom AS planteNom
+    FROM interactions
+    INNER JOIN medicaments ON interactions.medicament_id = medicaments.id
+    INNER JOIN plantes ON interactions.plante_id = plantes.id    
+    `;
+    db.query(query, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+
+// Ajouter une interaction
+app.post('/interactions', (req, res) => {
+    const { medicament_id, plante_id, description } = req.body;
+    const query = 'INSERT INTO interactions (medicament_id, plante_id, description) VALUES (?, ?, ?)';
+    db.query(query, [medicament_id, plante_id, description], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+
+// Ajouter un medicament
+app.post('/medicament', (req, res) => {
+    const { nom, categorie_id } = req.body;
+    const query = 'INSERT INTO medicaments (nom, categorie_id) VALUES (?, ?)';
+    db.query(query, [nom, categorie_id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+
+// Ajouter une plante
+app.post('/plante', (req, res) => {
+    const { nom, categorie_id } = req.body;
+    const query = 'INSERT INTO plantes (nom, categorie_id) VALUES (?, ?)';
+    db.query(query, [nom, categorie_id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+// Modifier une interaction
+app.put('/interactions/:id', (req, res) => {
+    const { id } = req.params;
+    const { medicament_id, plante_id, description } = req.body;
+    const query = 'UPDATE interactions SET medicament_id = ?, plante_id = ?, description = ? WHERE id = ?';
+    db.query(query, [medicament_id, plante_id, description, id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+// Modifier un medicament
+app.put('/medicaments/:id', (req, res) => {
+    const { id } = req.params;
+    const { nom, categorie_id } = req.body;
+    const query = 'UPDATE medicaments SET nom = ?, categorie_id = ? WHERE id = ?';
+    db.query(query, [nom, categorie_id, id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+// Modifier une plante
+app.put('/plantes/:id', (req, res) => {
+    const { id } = req.params;
+    const { nom, categorie_id } = req.body;
+    const query = 'UPDATE plantes SET nom = ?, categorie_id = ? WHERE id = ?';
+    db.query(query, [nom, categorie_id, id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+// Supprimer une interaction
+app.delete('/interactions/:id', (req, res) => {
+    const { id } = req.params;
+    const query = 'DELETE FROM interactions WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+// Supprimer un medicament
+app.delete('/medicaments/:id', (req, res) => {
+    const { id } = req.params;
+    const query = 'DELETE FROM medicaments WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+// Supprimer une plante
+app.delete('/plantes/:id', (req, res) => {
+    const { id } = req.params;
+    const query = 'DELETE FROM plantes WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+f
 module.exports = app;
